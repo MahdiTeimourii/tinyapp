@@ -16,9 +16,12 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const id = generateRandomString(); // Generate a random ID
+  const longURL = req.body.longURL; // Extract the longURL from the request body
+  urlDatabase[id] = longURL; // Add the new key-value pair to the urlDatabase
+  res.redirect(`/urls/${id}`); // Redirect to /urls/:id
 });
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -37,6 +40,16 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/u/:id", (req, res) => {
+  const id = req.params.id; // Get the ID from the request parameters
+  const longURL = urlDatabase[id]; // Retrieve the long URL from the urlDatabase using the ID
+
+  if (longURL) {
+    res.redirect(longURL); // Redirect to the long URL
+  } else {
+    res.status(404).send("URL not found"); // Handle case when the ID doesn't exist in the urlDatabase
+  }
+});
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
