@@ -69,6 +69,11 @@ app.get("/u/:id", (req, res) => {
     res.status(404).send("URL not found");
   }
 });
+app.post('/login', (req, res) => {
+  const { username } = req.body;
+  res.cookie('username', username);
+  res.redirect('/urls');
+});
 
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
