@@ -17,7 +17,8 @@
         <tr>
           <th scope="col">Short URL ID</th>
           <th scope="col">Long URL</th>
-          <th scope="col">Actions</th> <!-- Added new column for delete buttons -->
+          <th scope="col">Actions</th>
+          <th scope="col">Edit</th> <!--  new column for Edit links -->
         </tr>
       </thead>
       <tbody>
@@ -29,6 +30,9 @@
               <form method="POST" action="/urls/<%= id %>/delete">
                 <button type="submit" class="btn btn-danger">Delete</button>
               </form>
+            </td>
+            <td>
+              <a href="/urls/<%= id %>/edit">Edit</a> <!-- Edit link for each URL -->
             </td>
           </tr>
         <% } %>

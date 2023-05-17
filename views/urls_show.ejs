@@ -12,8 +12,8 @@
   </head>
 
   <body>
-    <%- include('partials/_header') %>
-    
+    <% include('partials/_header') %>
+
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
@@ -21,6 +21,13 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+        <form action="/urls/<%= id %>/update" method="POST">
+          <div class="form-group">
+            <label for="longURL">Updated Long URL:</label>
+            <input type="text" class="form-control" id="longURL" name="longURL" placeholder="Enter updated URL" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
       </div>
       <div class="card-footer text-muted"></div>
     </div>
@@ -40,6 +47,5 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
-    
   </body>
 </html>
