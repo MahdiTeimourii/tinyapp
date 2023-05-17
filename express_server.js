@@ -50,6 +50,16 @@ app.get("/u/:id", (req, res) => {
     res.status(404).send("URL not found"); // Handle case when the ID doesn't exist in the urlDatabase
   }
 });
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id; // Get the ID from the request parameters
+
+  if (urlDatabase[id]) {
+    delete urlDatabase[id]; // Use the delete operator to remove the URL
+    res.redirect("/urls"); // Redirect back to the urls_index page
+  } else {
+    res.status(404).send("URL not found"); // Handle case when the ID doesn't exist in the urlDatabase
+  }
+});
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
