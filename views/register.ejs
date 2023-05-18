@@ -1,14 +1,33 @@
-<% if (user) { %>
-        <span>Welcome, <%= user.email %>!</span>
-        <form action="/logout" method="POST">
-          <button type="submit">Logout</button>
-        </form>
-      <% } else { %>
+<header>
+  
+  <nav class="navbar navbar-expand-md navbar-dark bg-success">
+    <a class="navbar-brand" href="/urls">TinyApp</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/urls">My URLs</a>
+        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+      </div>
         <a href="/register">Register</a>
-        <form action="/login" method="POST">
+        <form action="/register" method="POST">
           <input type="text" name="email" placeholder="Email" required>
           <input type="password" name="password" placeholder="Password" required>
-          <button type="submit">Login</button>
-        </form>login</button>
-      </form>
-      <%}%>
+          <button type="submit">Register</button>
+        </form></button>
+      
+    </div>
+    
+  </nav>
+</header>
+
+
