@@ -12,6 +12,8 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.get("/hello", (req, res) => {
@@ -96,6 +98,40 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+app.get('/register', (req, res) => {
+  const templateVars = { user: ["username"] }
+  res.render("register", templateVars);
+});
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+
+  // Check if email or password is empty
+  if (email === "" || password === "") {
+    res.status(400).send("Email and password cannot be empty");
+    return;
+  }
+
+  // Check if email already exists in the users object
+  for (const userId in users) {
+    if (users[userId].email === email) {
+      res.status(400).send("Email already exists");
+      return;
+    }
+  }
+
+  const userId = generateRandomString();
+
+  const newUser = {
+    id: userId,
+    email,
+    password
+  };
+
+  users[userId] = newUser;
+
+  res.cookie("user_id", userId);
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
