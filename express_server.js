@@ -1,13 +1,12 @@
-function generateRandomString() {
-
-}
-
+const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
 
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 app.set("view engine", "ejs");
+
+// Mock data for demonstration purposes
 const users = {};
 const urlDatabase = {
   b6UTxQ: {
@@ -20,8 +19,16 @@ const urlDatabase = {
   },
 };
 
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+
+function generateRandomString() {
+
+}
+
+// Routes
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
@@ -32,8 +39,7 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, user: req.cookies["user_id"] };
-  console.log(templateVars.user)
-
+  console.log(templateVars.user);
   res.render("urls_index", templateVars);
 });
 
@@ -65,6 +71,7 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id].longURL;
+
   if (longURL) {
     const templateVars = { id, longURL, user: req.cookies["user_id"] };
     res.render("urls_show", templateVars);
@@ -88,12 +95,14 @@ app.post("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id].longURL;
+
   if (longURL) {
     res.redirect(longURL);
   } else {
     res.status(404).send("<html><body>The URL you requested does not exist.</body></html>");
   }
 });
+
 app.get("/login", (req, res) => {
   const templateVars = { user: req.cookies["user_id"] };
 
@@ -103,14 +112,25 @@ app.get("/login", (req, res) => {
     res.render("login", templateVars);
   }
 });
+
 app.post('/login', (req, res) => {
-  const { user_id } = req.body;
-  res.cookie('user_id', user_id);
-  res.redirect('/urls');
+  const { email, password } = req.body;
+
+  // Find the user with the matching email
+  const user = Object.values(users).find(user => user.email === email);
+
+  // Check if the user exists and the password matches
+  if (user && bcrypt.compareSync(password, user.password)) {
+    res.cookie('user_id', user.id);
+    res.redirect('/urls');
+  } else {
+    res.status(401).send("Invalid email or password");
+  }
 });
+
 app.post('/logout', (req, res) => {
-  res.clearCookie("user_id")
-  res.redirect('/login')
+  res.clearCookie("user_id");
+  res.redirect('/login');
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -127,6 +147,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+
 app.get('/register', (req, res) => {
   const templateVars = {};
 
@@ -136,6 +157,7 @@ app.get('/register', (req, res) => {
     res.render("register", templateVars);
   }
 });
+
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
 
@@ -155,10 +177,13 @@ app.post("/register", (req, res) => {
 
   const userId = generateRandomString();
 
+  // Hash the password using bcrypt
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   const newUser = {
     id: userId,
     email,
-    password
+    password: hashedPassword // Store the hashed password
   };
 
   users[userId] = newUser;
