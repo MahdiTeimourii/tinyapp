@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Edit URL</title>
+</head>
+<body>
+  <%- include('partials/_header') %>
+  <h1>Edit URL</h1>
+  <form action="/urls/<%= id %>" method="POST">
+    <label for="longURL">Long URL:</label>
+    <input type="text" id="longURL" name="longURL" value="<%= longURL %>">
+    <button type="submit">Save</button>
+  </form>
+</body>
+</html>
