@@ -7,7 +7,8 @@ const helpers = require("./helpers");
 const PORT = 8080;
 app.set("view engine", "ejs");
 
-
+// Mock data for demonstration purposes
+const users = {};
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -106,7 +107,7 @@ app.get("/urls/:id/edit", requireLogin, (req, res) => {
     };
     res.render("urls_edit", templateVars);
   } else {
-    res.status(404).send("URL not found");
+    res.status(404).send("Unauthorized to edit this URl");
   }
 });
 
@@ -120,7 +121,7 @@ app.post("/urls/:id", requireLogin, (req, res) => {
   } else if (!urlDatabase[id]) {
     res.status(404).send("URL not found");
   } else {
-    res.status(403).send("Unauthorized to edit this URL");
+    res.status(403).send("Unauthorized to edit this URl");
   }
 });
 
@@ -156,7 +157,7 @@ app.post("/login", (req, res) => {
     req.session.user_id = user.id;
     res.redirect("/urls");
   } else {
-    res.status(401).send("Invalid email or password");
+    res.status(401).send("This email is not registered yet, Please register first");
   }
 });
 
