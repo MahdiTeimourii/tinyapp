@@ -67,32 +67,25 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls", requireLogin, (req, res) => {
-  const templateVars = { urls: urlDatabase, user: req.session.user_id };
+  const userURLs = urlsForUser(req.session.user_id);
+  const templateVars = { urls: userURLs, user: req.session.user_id };
   console.log(templateVars.user);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", requireLogin, (req, res) => {
+  const userURLs = urlsForUser(req.session.user_id);
   const user = users[req.session.user_id];
-
-  const templateVars = { user };
+  const templateVars = { urls: userURLs, user };
   res.render("urls_new", templateVars);
-});
-
-app.post("/urls", requireLogin, (req, res) => {
-  const user = users[req.session.user_id];
-  const longURL = req.body.longURL;
-
-  const id = generateRandomString();
-  urlDatabase[id] = {
-    longURL,
-    userID: user.id,
-  };
-  res.redirect("/urls");
 });
 
 app.get("/urls/:id/edit", requireLogin, (req, res) => {
@@ -107,21 +100,7 @@ app.get("/urls/:id/edit", requireLogin, (req, res) => {
     };
     res.render("urls_edit", templateVars);
   } else {
-    res.status(404).send("Unauthorized to edit this URl");
-  }
-});
-
-app.post("/urls/:id", requireLogin, (req, res) => {
-  const id = req.params.id;
-  const newLongURL = req.body.longURL;
-
-  if (urlDatabase[id] && urlDatabase[id].userID === req.session.user_id) {
-    urlDatabase[id].longURL = newLongURL;
-    res.redirect("/urls");
-  } else if (!urlDatabase[id]) {
-    res.status(404).send("URL not found");
-  } else {
-    res.status(403).send("Unauthorized to edit this URl");
+    res.status(404).send("Unauthorized to edit this URL");
   }
 });
 
@@ -143,6 +122,56 @@ app.get("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     res.render("login", templateVars);
+  }
+});
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+app.get("/register", (req, res) => {
+  const templateVars = { user: req.session.user_id };
+
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("register", templateVars);
+  }
+});
+
+app.post("/urls", requireLogin, (req, res) => {
+  const user = users[req.session.user_id];
+  const longURL = req.body.longURL;
+
+  if (!longURL) {
+    res.status(400).send("Long URL cannot be empty");
+    return;
+  }
+
+  const id = generateRandomString();
+  urlDatabase[id] = {
+    longURL,
+    userID: user.id,
+  };
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id", requireLogin, (req, res) => {
+  const id = req.params.id;
+  const newLongURL = req.body.longURL;
+
+  if (!newLongURL || newLongURL.trim() === "") {
+    res.status(400).send("Long URL cannot be empty");
+    return;
+  }
+
+  if (urlDatabase[id] && urlDatabase[id].userID === req.session.user_id) {
+    urlDatabase[id].longURL = newLongURL;
+    res.redirect("/urls");
+  } else if (!urlDatabase[id]) {
+    res.status(404).send("URL not found");
+  } else {
+    res.status(403).send("Unauthorized to edit this URL");
   }
 });
 
@@ -176,20 +205,6 @@ app.post("/urls/:id/delete", requireLogin, (req, res) => {
     res.status(404).send("URL not found");
   } else {
     res.status(403).send("Unauthorized to delete this URL");
-  }
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/register", (req, res) => {
-  const templateVars = {};
-
-  if (req.session.user_id) {
-    res.redirect("/urls");
-  } else {
-    res.render("register", templateVars);
   }
 });
 
