@@ -186,7 +186,7 @@ app.post("/login", (req, res) => {
     req.session.user_id = user.id;
     res.redirect("/urls");
   } else {
-    res.status(401).send("This email is not registered yet, Please register first");
+    res.status(401).send("Make sure you are registered/entered the correct email and password");
   }
 });
 
